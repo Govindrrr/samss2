@@ -2,25 +2,47 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Student;
 use Filament\Widgets\ChartWidget;
 
 class GenderChart extends ChartWidget
 {
-    protected static ?string $heading = 'Chart';
+    protected static ?string $heading = 'Student by caste';
     protected static ?int $sort = 3;
 
     protected function getData(): array
     {
+        $students = Student::with('caste')->get();
+        $castes = $students->groupBy(fn($student) => $student->caste->name ?? 'unknown')
+        ->map(fn($group) => $group->count())->toArray();
+        // dd($castes);
             return [
                 'datasets' => [
                     [
-                        'label' => 'Blog posts created',
-                        'data' => [0, 10, 5, 2, 21, 32, 45, 74, 65, 45, 77, 89],
+                        'label' => '00',
+                        'data' => array_values($castes),
+                        "backgroundColor" => [
+                            'rgb(255, 99, 132)',
+                            'rgb(255, 205, 86)']
                     ],
                 ],
-                'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                'labels' => array_keys($castes),
             ];
     }
+    protected function getOptions(): array
+{
+    return [
+        'scales' => [
+            'y' => [
+                'display' => false, // Hide Y-axis
+                'beginAtZero' => true
+            ],
+            'x' => [
+                'display' => false, // Hide X-axis (optional)
+            ],
+        ],
+    ];
+}
 
     protected function getType(): string
     {

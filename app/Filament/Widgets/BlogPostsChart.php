@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
  
 class BlogPostsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Blog Posts';
+    protected static ?string $heading = 'Students by grade';
     protected static ?int $sort = 2;
 
  
@@ -25,8 +25,13 @@ class BlogPostsChart extends ChartWidget
             'labels' => array_keys($levels),
             'datasets' => [
                 [
-                    'label' => 'number of student',
+                    'label' => 'Number of Student by Grade',
                     'data' => array_values($levels),
+                    'backgroundColor' => [
+                         'rgb(255, 99, 13)',
+                         'rgb(255, 205, 86)'
+                    ],
+                    'borderColor' => '#fff'
                 ],
             ],
         ];

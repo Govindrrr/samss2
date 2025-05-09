@@ -99,7 +99,7 @@ class Markspage extends Page
         'exam'=>$this->exam,
         'classroom'=>$this->classroom,
     ]);
-    dd(session()->all());
+    // dd(session()->all());
 
     $this->createMark = false;
     $this->createNext = true;

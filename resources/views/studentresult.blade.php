@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg w-[80%] my-10">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -44,7 +44,8 @@
                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Subject</th>
                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 " colspan="2">Practical</th>
                         <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 " colspan="2">Theory</th>
-                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 " colspan="2">Obtained Mark</th>
+                        <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 " colspan="2">Obtained Mark
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,7 +65,9 @@
                             <td class="px-4 py-2 text-sm text-gray-600">{{ $mark->pass_mark }}</td>
                             <td class="px-4 py-2 text-sm text-gray-600">{{ $mark->pass_mark }}</td>
                             <td class="px-4 py-2 text-sm text-gray-600">{{ $mark->pass_mark }}</td>
-                            <td class="px-4 py-2 text-sm text-red-600{{$mark->marks > $mark->pass_mark ? 'text-red-500' : ''}} ">{{ $mark->marks }}</td>
+                            <td
+                                class="px-4 py-2 text-sm text-red-600{{ $mark->marks > $mark->pass_mark ? 'text-red-500' : '' }} ">
+                                {{ $mark->marks }}</td>
                             <td class="px-4 py-2 text-sm text-gray-600">{{ $mark->marks }}</td>
                         </tr>
                     @endforeach
@@ -73,13 +76,14 @@
                         <td class="px-4 py-2 text-sm text-gray-600 "> GPA = {{ $gpa }}</td>
                         <td class="px-4 py-2 text-sm text-gray-600 ">result =
                             @if ($result == 1)
-                            Pass
+                                Pass
                             @else
-                                 Fail                  
-                            @endif</td>
+                                Fail
+                            @endif
+                        </td>
                         <td class="px-4 py-2 text-sm text-gray-600 ">absent = {{ $total }}</td>
-                   </tr>
-                    
+                    </tr>
+
                 </tbody>
             </table>
 
@@ -88,4 +92,7 @@
         </div>
 </body>
 
-</html>
+</html> 
+
+
+

@@ -3,19 +3,19 @@
 namespace App\Livewire;
 
 use App\Models\Exam;
-use App\Models\Mark;
 use App\Models\Student;
+use Filament\Actions\Action as ActionsAction;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkAction;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Component;
 class ResultPage extends Component implements HasForms, HasTable
 {
@@ -53,10 +53,15 @@ class ResultPage extends Component implements HasForms, HasTable
            ->url(fn($record)=> route('student.show', $record))
            ->openUrlInNewTab()
            ->requiresConfirmation(),
+           Action::make('rsult'),
             
     ])
+    ->headerActions([
+        Action::make('results') 
+    ])
+
     ->bulkActions([
-        BulkAction::make('export')
+        BulkAction::make('ff')
         ->button()
         ->action(function (Collection $records) {
             session(['selected_records' => $records->pluck('id')]);
@@ -64,6 +69,14 @@ class ResultPage extends Component implements HasForms, HasTable
         })
     
     ]);
+    }
+    protected function getHeaderActions(): array
+    {
+        return [
+            ActionsAction::make('edit'),
+            // ->url(route('posts.edit', ['post' => $this->post])),
+            
+        ];
     }
 
     

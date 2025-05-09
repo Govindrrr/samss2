@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ExamResource;
 use App\Http\Resources\FacultyResource;
 use App\Http\Resources\LevelRecource;
+use App\Http\Resources\SchoolResource;
+use App\Http\Resources\SlidderResource;
 use App\Models\Classroom;
 use App\Models\Esetup;
 use App\Models\Exam;
 use App\Models\Faculty;
 use App\Models\Level;
 use App\Models\Mark;
+use App\Models\School;
+use App\Models\Slidder;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -39,12 +44,19 @@ class ApiController extends Controller
     }
     public function Exams(){
         $students = Exam::first();
-        // dd($students);
-        return response()->json($students);
+        return new ExamResource($students);
     }
     public function SubjectsByLevel($id){
         $subjects = Subject::with('levels')->findOrFail($id);
         return response()->json($subjects);
+    }
+    public function School(){
+        $school = School::first();
+        return new SchoolResource($school);
+    }
+    public function Slidder(){
+        $slidder = Slidder::all();
+        return SlidderResource::collection($slidder);
     }
     public function CreateMarks(Request $req){
         $validate = $req->validate([

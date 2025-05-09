@@ -4,10 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Mark;
 use App\Models\Student;
-use Niklasravnsborg\LaravelPdfMerger\Facades\PdfMerger;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Livewire\Component;
-use LynX39\LaraPdfMerger\PdfMergerServiceProvider;
 
 class StudentResult extends Component
 
@@ -17,17 +15,19 @@ class StudentResult extends Component
     public function mount()
     {
         $records = session('selected_records');
-        $this->stds = Student::whereIn('id', $records)->get(['id', 'first_name']);
+        dd($records);
+        $this->stds = Student::whereIn('id', $records)->get();
         // dd($this->stds);
 
     }
     public function Pdf()
     {
 
-        dd($this->stds);
+        // dd($this->stds);
         $pdfs = [];
+        $totals = [];
         foreach ($this->stds as $student) {
-            $Marks = Mark::where('student_id', $student->id)->where('exam_id', session('exam'))->get();
+            $Marks = Mark::where('student_id', $student->id)->where('exam_id',session('exam'))->get();
             $total = 0;
             $totalmark = 0;
 
@@ -39,14 +39,19 @@ class StudentResult extends Component
                 }
             }
             $data = [
-                'total' => $total,
+                'stds' => $this->stds,
+                // 'total' => $total,
+                // 'Marks' => $Marks,
+                // 'gpa' => 3.4,
+                'result' => 1,
             ];
 
             $pdf = Pdf::loadView('studentsresult', $data);
-            $pdfs += $pdf;
+            $pdfs = Pdf::loadView('studentsresult', $data);
+            
         }
-        return response()->streamDownload(function() use($pdf){
-            echo $pdf->stream();
+        return response()->streamDownload(function() use($pdfs){
+            echo $pdfs->stream();
         },'results.pdf');
     }
     public function render()

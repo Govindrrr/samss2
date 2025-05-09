@@ -15,7 +15,7 @@
                     
                         <!-- Item 4 -->
                         @foreach ($slidders as $slidder)
-                        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                        <div class=" duration-700 ease-in-out" data-carousel-item>
                             <img class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 border" src="{{ asset(Storage::url($slidder->image)) }}"
                             alt="" />
                     </div>

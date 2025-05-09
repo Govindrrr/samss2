@@ -7,6 +7,7 @@ use App\Livewire\StudentResult;
 use App\Models\Mark;
 use Illuminate\Support\Facades\Route;
 
+
 Route::controller(PageController::class)->group(function(){
     Route::get('/','home')->name('home');
     Route::get('/notice','notice')->name('notice');
@@ -52,6 +53,9 @@ Route::get('/admin/result/{student}', function ($std) {
 })->name('student.show');
 
 Route::get('admin/results/student', StudentResult::class)->name('students-result');
+Route::get('admin/lasear/{record}',function($records){
+    return $records;
+})->name('lesear');
 // Route::get('admin/results/student/',function(){
 //     $students = session()->get('selected_records');
 //     $Marks = [];

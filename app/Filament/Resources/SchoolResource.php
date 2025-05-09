@@ -38,6 +38,9 @@ class SchoolResource extends Resource
                 Forms\Components\TextInput::make('address')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('slogan')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('principal')
                     ->required()
                     ->maxLength(255),
@@ -64,6 +67,8 @@ class SchoolResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('logo')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('slogan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),

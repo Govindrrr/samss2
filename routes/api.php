@@ -9,6 +9,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/students', [ApiController::class,'students']);
+Route::get('/school', [ApiController::class,'School']);
+Route::get('/slidder',[ApiController::class,'Slidder']);
 Route::get('/exam', [ApiController::class,'Exams']);
 Route::get('/faculties', [ApiController::class,'Faculty']);
 Route::get('/level/{id}', [ApiController::class,'LevelsByFaculty']);
