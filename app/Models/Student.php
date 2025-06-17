@@ -29,6 +29,10 @@ class Student extends Model
     {
         return $this->belongsTo(Classroom::class);
     }
+    public function faculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculty::class);
+    }
 
     public function subjects(): BelongsToMany
     {
@@ -37,5 +41,15 @@ class Student extends Model
     public function marks(): HasMany
     {
         return $this->hasMany(Mark::class);
+    }
+    public function batches(): BelongsToMany
+    {
+        return $this->belongsToMany(Batch::class, 'batch_student');
+    }
+    public function scopeInActiveBatch($query)
+    {
+        return $query->whereHas('batches', function ($q) {
+            $q->where('is_active', true);
+        });
     }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('Tr_pass_mark');
             $table->integer('Pr_full_mark');
             $table->integer('Pr_pass_mark');
-            $table->foreignId('exam_id')->constrained();
+            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
             $table->foreignId('faculty_id')->constrained();
             $table->foreignId('level_id')->constrained();
             $table->timestamps();

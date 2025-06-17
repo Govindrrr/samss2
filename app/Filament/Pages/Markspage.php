@@ -44,11 +44,10 @@ class Markspage extends Page
                     ->label("Exam Id")
                     ->reactive()
                     ->required()
-                    ->options(
-                        Exam::all()->pluck('name', 'id'))
-                    ->default(function () {
-                       return Exam::where('id','desc')->first();       
-                    }),
+                    ->options(fn()=>
+                        Exam::whereHas('batch', function ($q) {
+                            $q->where('is_active', true);
+                        })->pluck('name', 'id')),
                 Select::make('faculty')
                     ->label("Faculty")
                     ->reactive()

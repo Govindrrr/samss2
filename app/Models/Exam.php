@@ -28,4 +28,10 @@ class Exam extends Model
     {
         return $this->hasMany(Result::class);
     }
+    public function scopeInActiveBatch($query)
+    {
+        return $query->whereHas('batch', function ($q) {
+            $q->where('is_active', true);
+        });
+    }
 }
