@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('batch_id');
-            $table->foreignId('type_id');
+            $table->foreignId('batch_id')->constrained('batches');
+            $table->foreignId('type_id')->constrained('types')->nullable();
             $table->timestamps();
         });
     }

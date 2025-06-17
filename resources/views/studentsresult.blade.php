@@ -13,7 +13,7 @@
             height: 100vh;
             /* Full viewport height */
             background-color: #c6b5b5;
-            padding: 60px 50px;
+            padding: 60px 1x;
             box-sizing: border-box;
             /* Ensure padding doesn’t affect width */
             color: black;
@@ -89,6 +89,7 @@
             @php
                 $Marks = App\Models\Mark::where('student_id', $student->id)->where('exam_id', session('exam'))->get();
                 $total = 0;
+                $gpa = 0;
                 $result = "pass";
                 $totalMark = 0;
             @endphp
@@ -165,8 +166,11 @@
                             </tr>
                         @endforeach
                         @php
+                            
+                            if($total != 0){
 
-                            $gpa = ($total/$totalMark * 100)/25;
+                                $gpa = ($total/$totalMark * 100)/25;
+                            }
                         @endphp
                         <tr class="border-t">
                             <td class="px-4 py-2 text-sm text-gray-600 ">Total = {{ $total }}</td>

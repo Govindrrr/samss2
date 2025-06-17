@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('date_of_birth_AD')->nullable();
             $table->date('date_of_birth_BS');
             $table->string('address');
+            $table->foreignId('faculty_id')->constrained('faculties');
             $table->foreignId('level_id')->constrained();
             $table->foreignId('batch_id')->constrained();
             $table->integer('phone');

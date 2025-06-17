@@ -23,11 +23,13 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Contracts\HasTable
@@ -47,7 +49,7 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
     public $classroom;
     public $exam;
     public $subject;
-
+    public $rolll;
     public function mount(): void
     {
         $subjectId = session('subject');
@@ -58,7 +60,7 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
                 $query->where('subject_id', $subjectId);
             })
             ->first();
-
+        // dd($this->Esetup);
 
         $this->subject = Subject::where('id', session('subject'))->first()->name;
         $this->level = Level::where('id', session('level'))->first()->grade;
@@ -72,35 +74,66 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
                 Section::make('Marks Entry')
                     ->description(fn() => "Subject: {$this->subject} ,Class: {$this->level} ,Section: {$this->classroom}")
                     ->schema([
-                        TextInput::make('roll_no')
+                        // TextInput::make('roll_no')
+                        //     ->label('Roll No.')
+                        //     ->afterStateUpdated(function ($state) {
+                        //         if (!$state) {
+                        //             $this->student = null;
+                        //             return;
+                        //         }
+                        //         $class = session('level');
+                        //         $batch = session('batch');
+                        //         $classroom = session('classroom');
+                        //         $student = Student::where('roll_no', $state)
+                        //             ->where('level_id', $class)
+                        //             ->where('classroom_id', $classroom)
+                        //             ->first();
+                        //         if ($student) {
+                        //             $this->student_id = $student->id;
+                        //             $this->student = $student->first_name  . " " .  $student->middle_name  . " " .  $student->last_name;
+                        //         } else {
+                        //             $this->student = "Student not found !!!!!";
+                        //             $this->student_id = null;
+                        //         }
+                        //     })
+                        //     ->reactive(),
+                        Select::make('roll_no')
                             ->label('Roll No.')
+                            ->reactive()
                             ->afterStateUpdated(function ($state) {
-                                if (!$state) {
-                                    // If roll_no is cleared, reset student-related properties to null
-                                    $this->student = null;
-                                    return;
-                                }
                                 $class = session('level');
                                 $batch = session('batch');
                                 $classroom = session('classroom');
-                                $student = Student::where('roll_no', $state)
+                                $student = Student::inActiveBatch()->where('roll_no', $state)
                                     ->where('level_id', $class)
                                     ->where('classroom_id', $classroom)
-                                    // ->where('batch_id', $batch)
                                     ->first();
                                 if ($student) {
                                     $this->student_id = $student->id;
                                     $this->student = $student->first_name  . " " .  $student->middle_name  . " " .  $student->last_name;
-                                } else {
-
-                                    $this->student_id = null;
                                 }
                             })
-                            ->reactive(),
-                        TextInput::make('student')
-                            ->label('Student Name')
-                            ->disabled(),
+                            ->options(fn() =>
+                            Student::inActiveBatch()->where('level_id', session('level'))
+                                ->where('classroom_id', session('classroom'))->get()
+                                // ->pluck('first_name','roll_no')),
+                                ->mapWithKeys(fn($student) => [$student->roll_no => "{$student->roll_no} {$student->first_name} {$student->middle_name} {$student->last_name}"])),
+
+                        // Select::make('name')
+                        // ->options(fn()=> 
+                        //     Student::query()->where('level_id', session('level'))
+                        //     ->where('classroom_id', session('classroom'))->get()
+                        //     // ->pluck('first_name','id')),
+                        //     ->mapWithKeys(fn($student)=>[$student->id => "{$student->first_name} {$student->middle_name} {$student->last_name}"])),
+
+                        // TextInput::make('student')
+
+                        //     ->label('Student Name')
+                        //     ->disabled(),
                         TextInput::make('mark')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue($this->Esetup->Tr_full_mark)
                             ->label('Obtained Mark'),
                     ])
                     ->columns(2)
@@ -108,16 +141,17 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
             ]);
     }
 
-    private function fetchNameByRollNo($rollNo): ?string
-    {
-        $studentName = Student::where('roll_no', $rollNo)->first();
-        return $studentName;
-    }
+    // private function fetchNameByRollNo($rollNo): ?string
+    // {
+    //     $studentName = Student::where('roll_no', $rollNo)->first();
+    //     return $studentName;
+    // }
 
     public function submit()
     {
         if ($this->Esetup) {
-            $validator =  $this->validate([
+
+            $validator = Validator::make($this->only(['roll_no', 'mark', 'student_id']), [
                 'roll_no' => [
                     'required',
                     Rule::unique('marks', 'roll_no')
@@ -128,29 +162,42 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
                 'mark' => 'required',
                 'student_id' => 'required',
             ]);
+            if ($validator->fails()) {
+                // dd($validator->errors()->all());
+                Notification::make()
+                    ->title('Failed!')
+                    ->body(implode($validator->errors()->all()))
+                    ->danger()
+                    ->send();
 
-            $mark = new Mark();
-            $mark->student_id = $this->student_id;
-            $mark->roll_no = $this->roll_no;
-            $mark->level_id = session('level');
-            $mark->subject_id = session('subject');
-            $mark->classroom_id = session('classroom');
-            $mark->exam_id = session('exam');
-            $mark->full_mark = $this->Esetup->Tr_full_mark;
-            $mark->pass_mark = $this->Esetup->Tr_pass_mark;
-            $mark->marks = $this->mark;
-            $mark->save();
+                // dd($validator);
+            } else {
+                $mark = new Mark();
+                $mark->student_id = $this->student_id;
+                $mark->roll_no = $this->roll_no;
+                $mark->level_id = session('level');
+                $mark->subject_id = session('subject');
+                $mark->classroom_id = session('classroom');
+                $mark->exam_id = session('exam');
+                $mark->full_mark = $this->Esetup->Tr_full_mark;
+                $mark->pass_mark = $this->Esetup->Tr_pass_mark;
+                $mark->marks = $this->mark;
+                $mark->save();
 
-            $roll = $this->roll_no;
-            $name = $this->student;
+                $roll = $this->roll_no;
+                $name = $this->student;
+                Notification::make()
+                    ->title('Success!')
+                    ->body("Marks of the Roll no.{$roll} Name with <strong>{$name}</strong>  <br>has submitted succesfully !")
+                    ->success()
+                    ->send();
+                $this->reset(['mark', 'student', 'roll_no']);
+            }
+        }
+        // dd('click');
+        else {
             Notification::make()
-                ->title('Success!')
-                ->body("Marks of the Roll no.{$roll} Name with <strong>{$name}</strong>  <br>has submitted succesfully !")
-                ->success()
-                ->send();
-            $this->reset(['mark', 'student', 'roll_no']);
-        } else {
-            Notification::make()
+                // ->duration(300)
                 ->title('Failed!')
                 ->body("Data not found in Exam Setup !")
                 ->danger()
@@ -160,18 +207,13 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
 
     }
 
-    public function getFromActions()
-    {
-        return [
-            Action::make('save')->submit('save'),
-        ];
-    }
+   
     public function table(Table $table): Table
     {
         return $table
-             ->query(Mark::query()->where('level_id', session('level'))
+            ->query(Mark::query()->where('level_id', session('level'))
                 ->where('classroom_id', session('classroom'))
-               ->where('exam_id', session('exam'))
+                ->where('exam_id', session('exam'))
                 ->where('subject_id', session('subject')))
 
             ->columns([
@@ -191,10 +233,12 @@ class MarkPage extends Component implements Forms\Contracts\HasForms, Tables\Con
                 //     ->query(fn(Builder $query) => $query->whereNotNull('email_verified_at'))
             ])
             ->actions([
-                Action::make('Edit')
+                EditAction::make('Edit')
                     ->form([
-                        TextInput::make('name'),
                         TextInput::make('roll_no'),
+                        TextInput::make('marks')
+                            ->numeric()
+                            ->maxValue($this->Esetup->Tr_full_mark),
                     ]),
                 // ->mountUsing(function (Form $form, User $record) {
                 //     $form->fill([

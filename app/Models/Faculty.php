@@ -20,4 +20,8 @@ class Faculty extends Model
     {
         return $this->belongsToMany(Subject::class);
     }
+    public function students(): HasMany
+    {
+        return $this->hasMany((Student::class));
+    }
 }

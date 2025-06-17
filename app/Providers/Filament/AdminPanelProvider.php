@@ -29,6 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('Adarsh Lalmatiya')
             ->favicon(asset('images/favicon.ico'))
+            ->sidebarCollapsibleOnDesktop()
             ->login()
             ->colors([
                 'primary' => Color::Indigo,

@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -17,7 +18,7 @@ class BatchResource extends Resource
 {
     protected static ?string $model = Batch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
@@ -26,6 +27,8 @@ class BatchResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Toggle::make('is_active')
+                    ->required(),
             ]);
     }
 
@@ -43,6 +46,18 @@ class BatchResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\ToggleColumn::make('is_active')
+                ->label('Active')
+                ->afterStateUpdated(function ($record, $state) {
+                    if ($state) {
+                        
+                        Batch::where('id', '!=', $record->id)->update(['is_active' => false]);
+                    }
+                    // Update current record
+                    $record->is_active = $state;
+                    $record->save();
+                }),
             ])
             ->filters([
                 //

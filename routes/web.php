@@ -4,12 +4,14 @@ use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Livewire\MarkPage;
 use App\Livewire\StudentResult;
+use App\Mail\RequestEmail;
 use App\Models\Mark;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
 Route::controller(PageController::class)->group(function(){
-    Route::get('/','home')->name('home');
+    // Route::get('/','home')->name('home');
     Route::get('/notice','notice')->name('notice');
     Route::get('/notices/{id}','notices')->name('notices');
     Route::get('/result','result')->name('result');
@@ -53,9 +55,16 @@ Route::get('/admin/result/{student}', function ($std) {
 })->name('student.show');
 
 Route::get('admin/results/student', StudentResult::class)->name('students-result');
+
+
 Route::get('admin/lasear/{record}',function($records){
     return $records;
 })->name('lesear');
+
+Route::get('admin/upgrade', function(){
+    Mail::to("govindoo98097@gmail.com")->send(new RequestEmail);
+    return ("this is upgraded value");
+})->name('up');
 // Route::get('admin/results/student/',function(){
 //     $students = session()->get('selected_records');
 //     $Marks = [];
