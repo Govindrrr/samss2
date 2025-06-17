@@ -16,10 +16,3 @@ require __DIR__.'/../vendor/autoload.php';
 (require_once __DIR__.'/../bootstrap/app.php')
     ->handleRequest(Request::capture());
 
-
-    
-if (app()->environment('production')) {
-    // Production-only code
-} else {
-    // Local/dev-only code
-}
